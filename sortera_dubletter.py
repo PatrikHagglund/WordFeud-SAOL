@@ -5,7 +5,7 @@ def sortera_och_ta_bort_dubletter(indata_txt_fil, utdata_txt_fil):
     unika_ord = set()
 
     # Las in ord fran indatafilen
-    with open(indata_txt_fil, mode='r', encoding='utf-8') as indata_fil:
+    with open(indata_txt_fil) as indata_fil:
         for rad in indata_fil:
             ordet = rad.strip()
             if ordet:
@@ -14,7 +14,7 @@ def sortera_och_ta_bort_dubletter(indata_txt_fil, utdata_txt_fil):
     sorterade_unika_ord = sorted(unika_ord)
 
     # Skriv resultatet till en ny fil
-    with open(utdata_txt_fil, mode='w', encoding='utf-8') as utdata_fil:
+    with open(utdata_txt_fil, 'w') as utdata_fil:
         for ordet in sorterade_unika_ord:
             utdata_fil.write(ordet + '\n')
 
