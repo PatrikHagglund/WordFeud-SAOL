@@ -1,4 +1,5 @@
 import csv
+import re
 
 """Utility functions to process word lists for WordFeud."""
 
@@ -34,6 +35,41 @@ def filtrera_ord_saol(saol_csv_fil, ord_txt_fil, utdata_txt_fil):
     print(f"Filtreringen ar klar! De filtrerade orden har sparats i '{utdata_txt_fil}'.")
     print(f"Antal borttagna ord (inkl. bojningar med 's'): {len(namn_ord)}")
     print(f"Antal ord kvar efter filtrering: {len(filtrerade_ord)}")
+
+
+def rensa_tecken(indata_txt_fil, utdata_txt_fil):
+    """Ersatter diakritiska tecken och filtrerar bort ord med ogiltiga tecken."""
+    accent_map = str.maketrans({
+        'É': 'E', 'È': 'E', 'À': 'A',
+        'é': 'E', 'è': 'E', 'à': 'A'
+    })
+    invalid_re = re.compile(r"[QWÊÑÇÜÆ\-:'0-9 ]", re.IGNORECASE)
+
+    delar_att_ta_bort = set()
+    godkanda_ord = []
+
+    with open(indata_txt_fil) as indata_fil:
+        for rad in indata_fil:
+            ordet = rad.strip()
+
+            if ' ' in ordet:
+                for delord in ordet.split():
+                    delar_att_ta_bort.add(delord)
+                continue
+
+            ordet = ordet.translate(accent_map)
+
+            if not invalid_re.search(ordet):
+                godkanda_ord.append(ordet)
+
+    godkanda_ord = [o for o in godkanda_ord if o not in delar_att_ta_bort]
+
+    with open(utdata_txt_fil, 'w') as utdata_fil:
+        for ordet in godkanda_ord:
+            utdata_fil.write(ordet + '\n')
+
+    print(f"Rensningen ar klar! De sanerade orden har sparats i '{utdata_txt_fil}'.")
+    print(f"Antal ord kvar efter rensning: {len(godkanda_ord)}")
 
 
 # ----- Previously in filtrera_langd.py -----
@@ -92,8 +128,11 @@ if __name__ == "__main__":
 
     filtrera_ord_saol(saol_filnamn, ord_filnamn, filtrerade_namn_fil)
 
+    sanerade_fil = 'sanerade_ord.txt'
+    rensa_tecken(filtrerade_namn_fil, sanerade_fil)
+
     filtrerade_langd_fil = 'filtrerade_langd_ord.txt'
-    filtrera_ord_efter_langd(filtrerade_namn_fil, filtrerade_langd_fil)
+    filtrera_ord_efter_langd(sanerade_fil, filtrerade_langd_fil)
 
     slutlig_fil = 'slutlig_ordlista.txt'
     sortera_och_ta_bort_dubletter(filtrerade_langd_fil, slutlig_fil)
