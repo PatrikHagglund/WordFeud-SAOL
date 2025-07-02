@@ -5,14 +5,14 @@ def filtrera_ord_efter_langd(indata_txt_fil, utdata_txt_fil, min_langd=2, max_la
     godkanda_ord = []
 
     # Las in ord fran indatafilen och filtrera dem
-    with open(indata_txt_fil, mode='r', encoding='utf-8') as indata_fil:
+    with open(indata_txt_fil) as indata_fil:
         for rad in indata_fil:
             ordet = rad.strip()  # Behall ursprunglig skiftlage
             if min_langd <= len(ordet) <= max_langd:
                 godkanda_ord.append(ordet)
 
     # Skriv de filtrerade orden till en ny fil
-    with open(utdata_txt_fil, mode='w', encoding='utf-8') as utdata_fil:
+    with open(utdata_txt_fil, 'w') as utdata_fil:
         for ordet in godkanda_ord:
             utdata_fil.write(ordet + '\n')
 

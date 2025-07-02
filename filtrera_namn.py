@@ -7,7 +7,7 @@ def filtrera_ord_saol(saol_csv_fil, ord_txt_fil, utdata_txt_fil):
     namn_ord = set()
 
     # Las in alla ord med ordklassen 'namn'
-    with open(saol_csv_fil, mode='r', encoding='utf-8') as saol_fil:
+    with open(saol_csv_fil) as saol_fil:
         saol_reader = csv.reader(saol_fil)
         for rad in saol_reader:
             if len(rad) > 2 and rad[2].strip().lower() == 'namn':
@@ -18,14 +18,14 @@ def filtrera_ord_saol(saol_csv_fil, ord_txt_fil, utdata_txt_fil):
     filtrerade_ord = []
 
     # Filtrera ord fran den andra textfilen
-    with open(ord_txt_fil, mode='r', encoding='utf-8') as ord_fil:
+    with open(ord_txt_fil) as ord_fil:
         for rad in ord_fil:
             ordet = rad.strip().lower()
             if ordet not in namn_ord:
                 filtrerade_ord.append(rad.strip())
 
     # Skriv de filtrerade orden till en ny fil
-    with open(utdata_txt_fil, mode='w', encoding='utf-8') as utdata_fil:
+    with open(utdata_txt_fil, 'w') as utdata_fil:
         for ordet in filtrerade_ord:
             utdata_fil.write(ordet + '\n')
 
