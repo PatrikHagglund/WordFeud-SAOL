@@ -43,7 +43,7 @@ def rensa_tecken(indata_txt_fil, utdata_txt_fil):
         'É': 'E', 'È': 'E', 'À': 'A',
         'é': 'E', 'è': 'E', 'à': 'A'
     })
-    invalid_re = re.compile(r"[QWÊÑÇÜÆ\-:'0-9 ]", re.IGNORECASE)
+    invalid_re = re.compile(r"[QWÊÑÇÜÆ\-:/'0-9 ]", re.IGNORECASE)
 
     delar_att_ta_bort = set()
     godkanda_ord = []

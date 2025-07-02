@@ -12,7 +12,7 @@ Följande ord är inte giltiga i WordFeud:
 * Ord som innehåller någon av de följande bokstäverna eller tecknen: 
     * Q eller W
     * Ê, Ñ, Ç, Ü eller Æ
-    * bindestreck (-), kolon (:), eller apostrof (‘)
+    * bindestreck (-), kolon (:), snedstreck (/), eller apostrof (‘)
     * siffror
     * mellanslag
 
