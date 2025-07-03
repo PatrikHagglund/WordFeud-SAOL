@@ -28,7 +28,7 @@ def filtrera_ord_saol(saol_csv_fil, ord_txt_fil, utdata_txt_fil):
                 filtrerade_ord.append(rad.strip())
 
     # Skriv de filtrerade orden till en ny fil
-    with open(utdata_txt_fil, 'w') as utdata_fil:
+    with open(utdata_txt_fil, 'w', newline='') as utdata_fil:
         for ordet in filtrerade_ord:
             utdata_fil.write(ordet + '\n')
 
@@ -64,7 +64,7 @@ def rensa_tecken(indata_txt_fil, utdata_txt_fil):
 
     godkanda_ord = [o for o in godkanda_ord if o not in delar_att_ta_bort]
 
-    with open(utdata_txt_fil, 'w') as utdata_fil:
+    with open(utdata_txt_fil, 'w', newline='') as utdata_fil:
         for ordet in godkanda_ord:
             utdata_fil.write(ordet + '\n')
 
@@ -86,7 +86,7 @@ def filtrera_ord_efter_langd(indata_txt_fil, utdata_txt_fil, min_langd=2, max_la
                 godkanda_ord.append(ordet)
 
     # Skriv de filtrerade orden till en ny fil
-    with open(utdata_txt_fil, 'w') as utdata_fil:
+    with open(utdata_txt_fil, 'w', newline='') as utdata_fil:
         for ordet in godkanda_ord:
             utdata_fil.write(ordet + '\n')
 
@@ -110,7 +110,7 @@ def sortera_och_ta_bort_dubletter(indata_txt_fil, utdata_txt_fil):
     sorterade_unika_ord = sorted(unika_ord)
 
     # Skriv resultatet till en ny fil
-    with open(utdata_txt_fil, 'w') as utdata_fil:
+    with open(utdata_txt_fil, 'w', newline='') as utdata_fil:
         for ordet in sorterade_unika_ord:
             utdata_fil.write(ordet + '\n')
 
