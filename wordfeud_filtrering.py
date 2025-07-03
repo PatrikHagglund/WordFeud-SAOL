@@ -1,6 +1,5 @@
 import csv
 import re
-import subprocess
 
 """Filtrera SAOL 14 för WordFeud."""
 
@@ -8,25 +7,22 @@ import subprocess
 
 def filtrera_ord_saol(saol_csv_fil, ord_txt_fil, utdata_txt_fil):
     """Filtrerar ord som har ordklassen 'namn' enligt SAOL."""
-    namn_ord = set()
-
-    # Las in alla ord med ordklassen 'namn'
+    # Läs in alla ord med ordklassen 'namn' (inkl. böjning på 's')
     with open(saol_csv_fil) as saol_fil:
-        saol_reader = csv.reader(saol_fil)
-        for rad in saol_reader:
-            if len(rad) > 2 and rad[2].strip().lower() == 'namn':
-                ordet = rad[1].strip().lower()
-                namn_ord.add(ordet)
-                namn_ord.add(ordet + 's')
+        namn_ord = {
+            rad[1].strip().lower()
+            for rad in csv.reader(saol_fil)
+            if len(rad) > 2 and rad[2].strip().lower() == 'namn'
+        }
+    namn_ord |= {f"{w}s" for w in namn_ord}
 
-    filtrerade_ord = []
-
-    # Filtrera ord fran den andra textfilen
+    # Filtrera ord från ordlista (exkl. namnord)
     with open(ord_txt_fil) as ord_fil:
-        for rad in ord_fil:
-            ordet = rad.strip().lower()
-            if ordet not in namn_ord:
-                filtrerade_ord.append(rad.strip())
+        filtrerade_ord = [
+            rad.strip()
+            for rad in ord_fil
+            if rad.strip().lower() not in namn_ord
+        ]
 
     # Skriv de filtrerade orden till en ny fil
     with open(utdata_txt_fil, 'w', newline='') as utdata_fil:
@@ -47,24 +43,18 @@ def rensa_tecken(indata_txt_fil, utdata_txt_fil):
     })
     invalid_re = re.compile(r"[QWÊÑÇÜÆ\-:/'0-9 ]", re.IGNORECASE)
 
-    delar_att_ta_bort = set()
-    godkanda_ord = []
-
-    with open(indata_txt_fil) as indata_fil:
-        for rad in indata_fil:
-            ordet = rad.strip()
-
-            if ' ' in ordet:
-                for delord in ordet.split():
-                    delar_att_ta_bort.add(delord)
-                continue
-
-            ordet = ordet.translate(accent_map)
-
-            if not invalid_re.search(ordet):
-                godkanda_ord.append(ordet)
-
-    godkanda_ord = [o for o in godkanda_ord if o not in delar_att_ta_bort]
+    delar_att_ta_bort = {
+        part
+        for line in open(indata_txt_fil)
+        if ' ' in line.strip()
+        for part in line.strip().split()
+    }
+    godkanda_ord = [
+        word
+        for line in open(indata_txt_fil)
+        for word in [line.strip().translate(accent_map)]
+        if ' ' not in line.strip() and not invalid_re.search(word) and word not in delar_att_ta_bort
+    ]
 
     with open(utdata_txt_fil, 'w', newline='') as utdata_fil:
         for ordet in godkanda_ord:
@@ -78,14 +68,13 @@ def rensa_tecken(indata_txt_fil, utdata_txt_fil):
 
 def filtrera_ord_efter_langd(indata_txt_fil, utdata_txt_fil, min_langd=2, max_langd=15):
 
-    godkanda_ord = []
-
-    # Las in ord fran indatafilen och filtrera dem
+    # Läs in ord från indatafil och filtrera på längd
     with open(indata_txt_fil) as indata_fil:
-        for rad in indata_fil:
-            ordet = rad.strip()  # Behall ursprunglig skiftlage
-            if min_langd <= len(ordet) <= max_langd:
-                godkanda_ord.append(ordet)
+        godkanda_ord = [
+            rad.strip()
+            for rad in indata_fil
+            if min_langd <= len(rad.strip()) <= max_langd
+        ]
 
     # Skriv de filtrerade orden till en ny fil
     with open(utdata_txt_fil, 'w', newline='') as utdata_fil:
@@ -100,16 +89,11 @@ def filtrera_ord_efter_langd(indata_txt_fil, utdata_txt_fil, min_langd=2, max_la
 
 def sortera_och_ta_bort_dubletter(indata_txt_fil, utdata_txt_fil):
 
-    unika_ord = set()
-
-    # Las in ord fran indatafilen
+    # Läs in ord och skapa sorterad lista av unika ord
     with open(indata_txt_fil) as indata_fil:
-        for rad in indata_fil:
-            ordet = rad.strip()
-            if ordet:
-                unika_ord.add(ordet)
-
-    sorterade_unika_ord = sorted(unika_ord)
+        sorterade_unika_ord = sorted(
+            {rad.strip() for rad in indata_fil if rad.strip()}
+        )
 
     # Skriv resultatet till en ny fil
     with open(utdata_txt_fil, 'w', newline='') as utdata_fil:
@@ -121,29 +105,6 @@ def sortera_och_ta_bort_dubletter(indata_txt_fil, utdata_txt_fil):
     print(f"Antal unika ord: {len(sorterade_unika_ord)}")
 
 
-# ----- Test -----
-
-# Git-objektshashar för filer som används av skriptet. Uppdatera dessa med:
-#   git hash-object saol_wordlist.txt saol2018clean.csv WordFeud_ordlista.txt
-EXPECTED_HASHES = {
-    "saol_wordlist.txt": "d179d76cb04baafcd5741767c027b36b8230a839",
-    "saol2018clean.csv": "1ff05dc06860ac85fde80dc938979556de90366e",
-    "WordFeud_ordlista.txt": "362f6e71ba0491dba348523c654763271630b434",
-}
-
-def git_hash_of_file(path: str) -> str:
-    """Returnera git-objektets SHA-1-hash för en fil."""
-    return subprocess.check_output([
-        "git",
-        "hash-object",
-        path,
-    ], text=True).strip()
-
-def test_expected_hashes() -> None:
-    """Kontrollera att filer inte förändrats sedan de checkades in."""
-    for fil, expected in EXPECTED_HASHES.items():
-        actual = git_hash_of_file(fil)
-        assert actual == expected, f"Hashvärdet för {fil} stämmer inte"
 
 
 if __name__ == "__main__":
@@ -162,4 +123,3 @@ if __name__ == "__main__":
     slutlig_fil = 'WordFeud_ordlista.txt'
     sortera_och_ta_bort_dubletter(filtrerade_langd_fil, slutlig_fil)
 
-    test_expected_hashes()

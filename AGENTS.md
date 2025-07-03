@@ -2,9 +2,10 @@
 - Keep the code short. Avoid non-essential error handling.
 
 ## Python code
+- Assume Python 3.13 or later.
 - Assume/use 'env PYTHONUTF8=1 python' or 'python -X utf8'.
 - For writing files, use newline=''.
 
 ## Test
-- python -X utf8 wordfeud_filtrering.py
-    - There should be no AssertionError.
+- python wordfeud_filtrering.py
+- pytest
