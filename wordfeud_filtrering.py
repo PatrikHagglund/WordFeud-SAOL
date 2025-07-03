@@ -1,7 +1,30 @@
 import csv
 import re
+import subprocess
 
 """Filtrera SAOL 14 för WordFeud."""
+
+# Git-objektshashar för filer som används av skriptet. Uppdatera dessa med:
+#   git hash-object saol_wordlist.txt saol2018clean.csv WordFeud_ordlista.txt
+EXPECTED_HASHES = {
+    "saol_wordlist.txt": "d179d76cb04baafcd5741767c027b36b8230a839",
+    "saol2018clean.csv": "1ff05dc06860ac85fde80dc938979556de90366e",
+    "WordFeud_ordlista.txt": "362f6e71ba0491dba348523c654763271630b434",
+}
+
+def git_hash_of_file(path: str) -> str:
+    """Returnera git-objektets SHA-1-hash för en fil."""
+    return subprocess.check_output([
+        "git",
+        "hash-object",
+        path,
+    ], text=True).strip()
+
+def test_expected_hashes() -> None:
+    """Kontrollera att filer inte förändrats sedan de checkades in."""
+    for fil, expected in EXPECTED_HASHES.items():
+        actual = git_hash_of_file(fil)
+        assert actual == expected, f"Hashvärdet för {fil} stämmer inte"
 
 # ----- Ta bort ord med ordklassen 'namn' -----
 
@@ -134,3 +157,4 @@ if __name__ == "__main__":
 
     slutlig_fil = 'WordFeud_ordlista.txt'
     sortera_och_ta_bort_dubletter(filtrerade_langd_fil, slutlig_fil)
+    test_expected_hashes()
