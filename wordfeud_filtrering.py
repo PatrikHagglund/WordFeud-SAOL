@@ -1,47 +1,51 @@
+"""Filtrera SAOL 14 för WordFeud.
+
+Läser SAOL CSV och ordlista för att transformera och filtrera bort ord
+för att passa WordFeud."""
+
 import csv
 import re
 
-# Mappning för ersättning av specifika diakritiska tecken
+# Kartläggning för ersättning av vissa diakritiska tecken
 accent_map = str.maketrans({
     'É': 'E', 'È': 'E', 'À': 'A',
     'é': 'E', 'è': 'E', 'à': 'A'
 })
 
-# Reguljärt uttryck för ogiltiga tecken (siffror, bindestreck, vissa accenter m.m.)
+# Regex för otillåtna tecken: siffror, bindestreck, vissa accenter m.m.
 invalid_re = re.compile(r"[-QWÊÑÇÜÆ:/'0-9 ]", re.IGNORECASE)
 
-"""Filtrera SAOL 14 för WordFeud."""
+def filtrera_ord_saol(saol_csv_fil, saol_fil):
+    """Filtrera bort ord med ordklassen 'namn'.
 
-# ----- Ta bort ord med ordklassen 'namn' -----
-
-def filtrera_ord_saol(saol_csv_fil, ord_txt_fil):
-    """Filtrerar ord som har ordklassen 'namn' enligt SAOL."""
-    # Läs in alla ord med ordklassen 'namn' (inkl. böjning på 's')
-    with open(saol_csv_fil) as saol_fil:
+    Laddar bort namnord (inklusive 's'-former) enligt SAOL CSV från ordlistan.
+    """
+    with open(saol_csv_fil) as csv_fil:
         namn_ord = {
             form
-            for rad in csv.reader(saol_fil)
+            for rad in csv.reader(csv_fil)
             if len(rad) > 2 and rad[2].strip().lower() == 'namn'
             for form in (rad[1].strip().lower(), rad[1].strip().lower() + 's')
         }
 
-    # Filtrera ord från ordlista (exkl. namnord)
-    with open(ord_txt_fil) as ord_fil:
-        filtrerade_ord = [
-            rad.strip()
-            for rad in ord_fil
-            if rad.strip().lower() not in namn_ord
-        ]
+    with open(saol_fil) as ord_fil:
+        alla_ord = [rad.strip() for rad in ord_fil]
 
-    print("Filtreringen ar klar!")
-    print(f"Antal borttagna ord (inkl. bojningar med 's'): {len(namn_ord)}")
-    print(f"Antal ord kvar efter filtrering: {len(filtrerade_ord)}")
+    print(f"Läser '{saol_fil}' och '{saol_csv_fil}'")
+    print(f"Antal ord från början: {len(alla_ord)}")
+
+    filtrerade_ord = [
+        w
+        for w in alla_ord
+        if w.lower() not in namn_ord
+    ]
+
+    print(f"Antal ord kvar efter bortrensning av namn: {len(filtrerade_ord)}")
     return filtrerade_ord
 
 
-# ----- Ersätt diakritiska tecken och filtrerar bort ord med ogiltiga tecken. -----
-
 def rensa_tecken(indata_ord):
+    """Ersätt diakritiska tecken och filtrera bort ord med otillåtna tecken."""
     delar_att_ta_bort = {
         part
         for w in indata_ord if ' ' in w
@@ -56,35 +60,28 @@ def rensa_tecken(indata_ord):
             continue
         godkanda_ord.append(w2)
 
-    print("Rensningen ar klar!")
-    print(f"Antal ord kvar efter rensning: {len(godkanda_ord)}")
+    print(f"Antal ord kvar efter rensning och filtrering på tecken: {len(godkanda_ord)}")
     return godkanda_ord
 
 
-# ----- Filtrerar bort för korta och långa ord. -----
-
 def filtrera_ord_efter_langd(indata_ord, min_langd=2, max_langd=15):
+    """Filtrera bort för korta och långa ord."""
     godkanda_ord = [
         w
         for w in indata_ord
         if min_langd <= len(w) <= max_langd
     ]
 
-    print("Filtreringen ar klar!")
-    print(f"Antal ord kvar efter langdfiltrering: {len(godkanda_ord)}")
+    print(f"Antal ord kvar efter rensning på ordlängd: {len(godkanda_ord)}")
     return godkanda_ord
 
 
-# ----- Rensar dubletter och sorterar orden. -----
-
 def sortera_och_ta_bort_dubletter(indata_ord):
+    """Rensa dubletter och sortera ord."""
     sorterade_unika_ord = sorted({w for w in indata_ord if w})
 
-    print("Filtreringen ar klar! Dubletter har tagits bort och orden har sorterats.")
-    print(f"Antal unika ord: {len(sorterade_unika_ord)}")
+    print(f"Antal ord kvar efter rensning av dubbletter: {len(sorterade_unika_ord)}")
     return sorterade_unika_ord
-
-
 
 
 def main():
@@ -103,7 +100,7 @@ def main():
 
     with open(args.output, "w", newline='') as fd:
         fd.writelines(w + "\n" for w in ord4)
-    print(f"Sparat {len(ord4)} ord i '{args.output}'")
+    print(f"Sparat i '{args.output}'")
 
 if __name__ == "__main__":
     main()
