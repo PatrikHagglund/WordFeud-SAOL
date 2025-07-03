@@ -1,6 +1,7 @@
 import csv
 import re
 import subprocess
+import urllib.parse
 
 """Filtrera SAOL 14 för WordFeud."""
 
@@ -118,7 +119,22 @@ def sortera_och_ta_bort_dubletter(indata_txt_fil, utdata_txt_fil):
 
     print("Filtreringen ar klar! Dubletter har tagits bort och orden har sorterats.")
     print(f"De sorterade unika orden har sparats i '{utdata_txt_fil}'.")
-    print(f"Antal unika ord: {len(sorterade_unika_ord)}")
+
+
+# ----- Skriv HTML-ordlista -----
+
+def skriv_html_ordlista(indata_txt_fil, utdata_html_fil):
+    """Skriv en HTML-fil dar varje ord ar en lank till SAOL."""
+
+    with open(indata_txt_fil) as indata_fil, open(utdata_html_fil, 'w', newline='') as html_fil:
+        for rad in indata_fil:
+            ordet = rad.strip()
+            if not ordet:
+                continue
+            sok_ord = urllib.parse.quote(ordet)
+            html_fil.write(f'<a href="https://svenska.se/saol/?sok={sok_ord}">{ordet}</a>\n')
+
+    print(f"HTML-ordlistan har sparats i '{utdata_html_fil}'.")
 
 
 # ----- Test -----
@@ -161,5 +177,8 @@ if __name__ == "__main__":
 
     slutlig_fil = 'WordFeud_ordlista.txt'
     sortera_och_ta_bort_dubletter(filtrerade_langd_fil, slutlig_fil)
+
+    html_fil = 'WordFeud_ordlista.html'
+    skriv_html_ordlista(slutlig_fil, html_fil)
 
     test_expected_hashes()
