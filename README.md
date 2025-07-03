@@ -1,7 +1,7 @@
 # WordFeud ordlista SAOL 14
 Filen `WordFeud_ordlista.txt` innehåller en lista på alla giltiga ord som går att lägga i [WordFeud](https://sv.wikipedia.org/wiki/Wordfeud) med ordlistan "svenska - alla ordformer".
 
-Ordlistor för SAOL 14 är hämtade från [axki/saol-wordlist](https://github.com/axki/saol-wordlist) (`saol_wordlist.txt` med alla ordformer) och [Torbacka/wordlist](https://github.com/Torbacka/wordlist) (`saol2018clean.csv` som inte har alla ordformer, men används för att identifier ord med ordklassen "namn").
+Ordlistor för SAOL 14 är hämtade från [axki/saol-wordlist](https://github.com/axki/saol-wordlist) (`saol_wordlist.txt` med alla ordformer) och [Torbacka/wordlist](https://github.com/Torbacka/wordlist) (`saol2018clean.csv` utan alla ordformer, men används för att identifiera ord med ordklassen "namn").
 
 ## Ändringar av SAOL 14
 I WordFeud används SAOL 14 som ordlista, fast med vissa ändringar.
