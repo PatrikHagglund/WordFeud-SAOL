@@ -6,19 +6,19 @@ för att passa WordFeud."""
 import csv
 import re
 
-# Kartläggning för ersättning av vissa diakritiska tecken
+# Mappning för ersättning av vissa diakritiska tecken.
+# ÉÈÀ men tex ej ÅÄÖ
 accent_map = str.maketrans({
-    'É': 'E', 'È': 'E', 'À': 'A',
-    'é': 'E', 'è': 'E', 'à': 'A'
+    'É': 'E', 'È': 'E', 'À': 'A'
 })
 
 # Regex för otillåtna tecken: siffror, bindestreck, vissa accenter m.m.
 invalid_re = re.compile(r"[-QWÊÑÇÜÆ:/'0-9 ]", re.IGNORECASE)
 
-def filtrera_ord_saol(saol_csv_fil, saol_fil):
+def filtrera_ord_saol(saol_fil, saol_csv_fil):
     """Filtrera bort ord med ordklassen 'namn'.
 
-    Laddar bort namnord (inklusive 's'-former) enligt SAOL CSV från ordlistan.
+    Tar bort namnord (inklusive 's'-former) enligt SAOL CSV ordlistan.
     """
     with open(saol_csv_fil) as csv_fil:
         namn_ord = {
@@ -88,12 +88,12 @@ def main():
     import argparse
 
     p = argparse.ArgumentParser(description="Filtrera SAOL för WordFeud.")
-    p.add_argument("--saol-csv", default="saol2018clean.csv")
     p.add_argument("--saol", default="saol_wordlist.txt")
+    p.add_argument("--saol-csv", default="saol2018clean.csv")
     p.add_argument("--output", default="WordFeud_ordlista.txt")
     args = p.parse_args()
 
-    ord1 = filtrera_ord_saol(args.saol_csv, args.saol)
+    ord1 = filtrera_ord_saol(args.saol, args.saol_csv)
     ord2 = rensa_tecken(ord1)
     ord3 = filtrera_ord_efter_langd(ord2)
     ord4 = sortera_och_ta_bort_dubletter(ord3)
