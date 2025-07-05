@@ -9,7 +9,7 @@ I WordFeud används SAOL 14 som ordlista, fast med vissa ändringar.
 Följande ord är inte giltiga eller omöjliga i WordFeud:
 * Ord som har ordklassen “namn”.
 * Ord som har färre än 2 eller fler än 15 bokstäver.
-* Ord som innehåller någon av följande bokstäver eller tecken: 
+* Ord som innehåller någon av följande bokstäver eller tecken:
     * Q eller W
     * Ê, Ñ, Ç, Ü eller Æ
     * bindestreck (-), kolon (:), snedstreck (/), eller apostrof (‘)
