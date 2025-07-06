@@ -5,6 +5,7 @@ för att passa WordFeud."""
 
 import csv
 import re
+from typing import List
 
 # Mappning för ersättning av vissa diakritiska tecken.
 # ÉÈÀ men tex ej ÅÄÖ
@@ -14,7 +15,7 @@ accent_map = str.maketrans({"É": "E", "È": "E", "À": "A"})
 invalid_re = re.compile(r"[-QWÊÑÇÜÆ:/'0-9 ]", re.IGNORECASE)
 
 
-def filtrera_ord_saol(saol_fil, saol_csv_fil):
+def filtrera_ord_saol(saol_fil: str, saol_csv_fil: str) -> List[str]:
     """Filtrera bort ord med ordklassen 'namn'.
 
     Tar bort namnord (inklusive 's'-former) enligt SAOL CSV ordlistan.
@@ -39,7 +40,7 @@ def filtrera_ord_saol(saol_fil, saol_csv_fil):
     return filtrerade_ord
 
 
-def rensa_tecken(indata_ord):
+def rensa_tecken(indata_ord: List[str]) -> List[str]:
     """Ersätt diakritiska tecken och filtrera bort ord med otillåtna tecken."""
     delar_att_ta_bort = {part for w in indata_ord if " " in w for part in w.split()}
     godkanda_ord = []
@@ -57,7 +58,9 @@ def rensa_tecken(indata_ord):
     return godkanda_ord
 
 
-def filtrera_ord_efter_langd(indata_ord, min_langd=2, max_langd=15):
+def filtrera_ord_efter_langd(
+    indata_ord: List[str], min_langd: int = 2, max_langd: int = 15
+) -> List[str]:
     """Filtrera bort för korta och långa ord."""
     godkanda_ord = [w for w in indata_ord if min_langd <= len(w) <= max_langd]
 
@@ -65,7 +68,7 @@ def filtrera_ord_efter_langd(indata_ord, min_langd=2, max_langd=15):
     return godkanda_ord
 
 
-def sortera_och_ta_bort_dubletter(indata_ord):
+def sortera_och_ta_bort_dubletter(indata_ord: List[str]) -> List[str]:
     """Rensa dubletter och sortera ord."""
     sorterade_unika_ord = sorted({w for w in indata_ord if w})
 
@@ -73,7 +76,7 @@ def sortera_och_ta_bort_dubletter(indata_ord):
     return sorterade_unika_ord
 
 
-def main():
+def main() -> None:
     import argparse
 
     p = argparse.ArgumentParser(description="Filtrera SAOL för WordFeud.")
